@@ -1,0 +1,25 @@
+<div class="ion-margin">
+<h4">Enquires</h4>
+<h6 *ngIf="hasError == true">
+  {{errorText}}
+</h6>
+
+<ion-grid  *ngIf="hasError == false">
+  <ion-row *ngIf="allEnquires.length > 0">
+    <ion-col size="12" *ngFor="let enquiry of allEnquires">
+      <ion-card>
+          <ion-card-header>
+            <ion-card-title>
+              {{enquiry?.phone}}
+              <div class="ion-float-right"> {{enquiry?.fullName}}</div>
+            </ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+              <div class="card-info-text">{{enquiry?.email}}</div>
+              <div class="card-info-label">Email</div>
+          </ion-card-content>
+      </ion-card>
+    </ion-col>
+  </ion-row>
+</ion-grid>
+</div>

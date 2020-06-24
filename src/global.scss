@@ -24,3 +24,27 @@
 @import "~@ionic/angular/css/text-alignment.css";
 @import "~@ionic/angular/css/text-transformation.css";
 @import "~@ionic/angular/css/flex-utils.css";
+
+
+ion-item {
+  ion-label {
+    margin-bottom: 5px !important;
+  }
+}
+
+ion-menu {
+  --side-min-width: 170px;
+  --side-max-width: 20%;
+}
+
+ion-card-content {
+  .card-info-text {
+    font-size: medium;
+    font-weight: bold;
+  }
+
+  .card-info-label {
+    font-size: small;
+  }
+}
+
