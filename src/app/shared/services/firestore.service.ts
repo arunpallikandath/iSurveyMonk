@@ -5,6 +5,7 @@ import 'firebase/firestore';
 import {SignupUser} from '../models/signupuser.model';
 import {FirebaseService} from './firebase.service';
 import {user} from 'firebase-functions/lib/providers/auth';
+import {GlobalsService} from './globals.service';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +14,7 @@ export class FirestoreService {
 
   organizationRef;
 
-  constructor(firebaseService: FirebaseService) {
+  constructor(firebaseService: FirebaseService, private globals: GlobalsService) {
     firebaseService.initializeFirebase();
   }
 
@@ -24,7 +25,8 @@ export class FirestoreService {
     return db.collection('master_enquiries').add(signupUserWithDate);
   }
 
-  public getUserInfo(userId) {
+  public getUserInfo() {
+    const userId = window.localStorage.getItem('loginId');
     const db = firebase.firestore();
     return new Promise((resolve, reject) => {
       db.collection('master_users').doc(userId).get()
@@ -38,6 +40,7 @@ export class FirestoreService {
             } else {
               const organization = masterUserSnapshot.get('organization');
               const organizationRef =  db.collection(organization);
+              this.globals.setOrganization(organizationRef);
               organizationRef.get()
                   .then(orgSnapshot => {
                     if (!orgSnapshot.empty) {
@@ -46,10 +49,11 @@ export class FirestoreService {
                       orgDoc.ref.collection('users').doc(userId).get().then((userSnapshot) => {
                         console.log(userSnapshot);
                         if (userSnapshot) {
-                          const fullName = userSnapshot.get('fullName') || 'Anonymous';
-                          const role = userSnapshot.get('role') || 'Anonymous';
+                          const fullName = userSnapshot.get('fullName') || '';
+                          const role = userSnapshot.get('role') || '';
+                          const organization = userSnapshot.get('organization') || '';
                           console.log(fullName);
-                          resolve({name: fullName, role});
+                          resolve({name: fullName, role, organization});
                         } else {
                           reject();
                         }
@@ -72,6 +76,7 @@ export class FirestoreService {
     return contactsRef.get();
   }
 
+
   public deleteEnquiry(docId) {
     const db = firebase.firestore();
     return db.collection('master_enquiries').doc(docId).delete();
@@ -86,6 +91,5 @@ export class FirestoreService {
           return querySnapshot.docs[0];
         }
       });
-
   }
 }

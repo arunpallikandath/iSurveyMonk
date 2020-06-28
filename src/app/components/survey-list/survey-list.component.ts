@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import {FirestoreService} from '../../shared/services/firestore.service';
 
 @Component({
   selector: 'app-survey-list',
@@ -7,7 +8,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SurveyListComponent implements OnInit {
 
-  constructor() { }
+  constructor(private firestore: FirestoreService) { }
 
   ngOnInit() {}
 

@@ -2,9 +2,11 @@
   <ion-split-pane contentId="main-content">
     <ion-menu contentId="main-content" type="overlay">
       <ion-content>
+        <ion-toolbar color="primary">
+          <ion-title class="ion-text-center">SURVEY MONK</ion-title>
+        </ion-toolbar>
+
         <ion-list id="inbox-list">
-          <ion-list-header>SURVEY MONK</ion-list-header>
-          <ion-note>info@surveymonk.com</ion-note>
 
           <ion-menu-toggle auto-hide="false" *ngFor="let p of globals.menuItems; let i = index">
             <ion-item (click)="selectedIndex = i" routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" [class.selected]="selectedIndex == i">

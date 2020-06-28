@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import {FirestoreService} from '../../shared/services/firestore.service';
 
 @Component({
   selector: 'app-user-list',
@@ -7,8 +8,29 @@ import { Component, OnInit } from '@angular/core';
 })
 export class UserListComponent implements OnInit {
 
-  constructor() { }
+  hasError = false;
+  errorText: string = '';
+  allUsers = [];
 
-  ngOnInit() {}
+  constructor(private fStore: FirestoreService, ) { }
+
+  ngOnInit(): void {
+    this.hasError = false;
+    this.loadUserList();
+  }
+
+  private loadUserList() {
+    this.fStore.getAllOrganisationUsers(organizationTeam).then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        const docId = {docId: doc.id}
+        this.allUsers.push({...doc.data(), ...docId});
+      });
+    }, error => {
+      console.log(error);
+      this.hasError = true;
+      this.errorText = 'Insufficient permission. Please contact administrator';
+      this.allUsers = [];
+    });
+  }
 
 }

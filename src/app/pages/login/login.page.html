@@ -1,0 +1,48 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>SURVEY MONK</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+<ion-grid class="main-grid">
+  <ion-row>
+    <ion-col size="8">
+
+    </ion-col>
+    <ion-col size="4">
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>
+            Sign In
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <form [formGroup]="smLoginForm" (ngSubmit)="onSubmit()" autocomplete="98434">
+              <ion-item>
+                <ion-label position="stacked" >Username:</ion-label>
+                <ion-input type="text" placeholder="" formControlName="smUsername" autocomplete="98434"></ion-input>
+                <small class="help is-danger" *ngIf="submitted && f.smUsername.errors?.required">Required</small>
+              </ion-item>
+            <ion-item>
+              <ion-label position="stacked">password:</ion-label>
+              <ion-input type="password" placeholder="" formControlName="smPassword" autocomplete="98434"></ion-input>
+              <small class="help is-danger" *ngIf="submitted && f.smPassword.errors?.required">Required</small>
+            </ion-item>
+            <div class="help is-danger"  *ngIf="loginError === true">{{loginErrorMessage}}</div>
+            <div class="card-footer" >
+              <ion-button type="submit" [disabled]="loading" >Sign In</ion-button>
+            </div>
+          </form>
+        </ion-card-content>
+      </ion-card>
+      <div class="ion-text-center ion-margin-top">
+        <p class="has-margin-10">New To Survey Monk?</p>
+        <p class="has-margin-10">
+          <ion-button  color="light" (click)="signUp()">Contact us</ion-button>
+        </p>
+      </div>
+    </ion-col>
+  </ion-row>
+</ion-grid>
+</ion-content>

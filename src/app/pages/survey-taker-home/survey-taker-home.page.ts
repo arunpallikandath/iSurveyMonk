@@ -1,37 +1,28 @@
 import { Component, OnInit } from '@angular/core';
 import {AlertController, MenuController} from '@ionic/angular';
 import {GlobalsService} from '../../shared/services/globals.service';
-import {AuthService} from '../../shared/services/auth.service';
 import {Router} from '@angular/router';
+import {AuthService} from '../../shared/services/auth.service';
 
 @Component({
-  selector: 'app-master-admin-home',
-  templateUrl: './master-admin-home.page.html',
-  styleUrls: ['./master-admin-home.page.scss'],
+  selector: 'app-survey-taker-home',
+  templateUrl: './survey-taker-home.page.html',
+  styleUrls: ['./survey-taker-home.page.scss'],
 })
-export class MasterAdminHomePage implements OnInit {
+export class SurveyTakerHomePage implements OnInit {
 
-  constructor(private menuCtrl: MenuController, private globals: GlobalsService,
-              private auth: AuthService, private router: Router, private alertCtrl: AlertController) {
+  constructor(private menuCtrl: MenuController, private globals: GlobalsService, private alertCtrl: AlertController,
+              private router: Router, private auth: AuthService) {
     this.globals.menuItems = [];
     this.globals.menuItems.push({
       title: 'Home',
-      url: 'master-admin-home',
+      url: 'survey-taker-home',
       icon: 'home'
     })
     menuCtrl.enable(true);
   }
 
   ngOnInit() {
-  }
-
-  logout() {
-    this.auth.logout().then((response) => {
-      console.log('logout');
-      this.router.navigate(['login']);
-    }, error => {
-      console.log(error);
-    });
   }
 
   async presentLogoutConfirmation() {
@@ -60,4 +51,12 @@ export class MasterAdminHomePage implements OnInit {
     await alert.present();
   }
 
+  logout() {
+    this.auth.logout().then((response) => {
+      console.log('logout');
+      this.router.navigate(['login']);
+    }, error => {
+      console.log(error);
+    });
+  }
 }

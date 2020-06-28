@@ -4,6 +4,7 @@ import {FirestoreService} from '../../shared/services/firestore.service';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {HttpClient} from '@angular/common/http';
 import {Router} from '@angular/router';
+import {ModalController} from '@ionic/angular';
 
 @Component({
   selector: 'app-contact',
@@ -21,7 +22,8 @@ export class ContactComponent implements OnInit {
   signupForm;
 
 
-  constructor(private firestore: FirestoreService, private router: Router, private http: HttpClient) { }
+  constructor(private firestore: FirestoreService, private router: Router, private http: HttpClient,
+              private modalCtrl: ModalController) { }
 
   ngOnInit(): void {
     this.isPostSignup = false;
@@ -32,9 +34,11 @@ export class ContactComponent implements OnInit {
         Validators.required,
         Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$')]),
       phone: new FormControl(''),
-      organization: new FormControl(''),
-      reason: new FormControl(''),
-      comments: new FormControl('')
+      company: new FormControl(''),
+      country: new FormControl(''),
+      hearFrom: new FormControl(''),
+      helpOn: new FormControl(''),
+      description: new FormControl('')
     });
     console.log('Contact');
   }
@@ -49,31 +53,40 @@ export class ContactComponent implements OnInit {
     if (!this.signupForm.invalid) {
       const signupUser: SignupUser = {
         fullName: this.signupForm.get('fullName').value,
-        organization: this.signupForm.get('organization').value,
+        company: this.signupForm.get('company').value,
+        country: this.signupForm.get('country').value,
         email: this.signupForm.get('email').value,
         phone: this.signupForm.get('phone').value,
-        reason: this.signupForm.get('reason').value,
-        comments: this.signupForm.get('comments').value,
+        hearFrom: this.signupForm.get('hearFrom').value,
+        helpOn: this.signupForm.get('helpOn').value,
+        description: this.signupForm.get('description').value,
       };
       this.firestore.addContact(signupUser).then((result) => {
         console.log(result);
         this.http.post('https://us-central1-survey-monk-2020.cloudfunctions.net/sendContactNotification',
             {email: signupUser.email,
               fullName: signupUser.fullName,
-              organization: signupUser.organization,
               phone: signupUser.phone,
-              status: 'NEW'}
-        )
-            .subscribe((result) => {
-              console.log(result);
+              country: signupUser.country,
+              company: signupUser.company,
+              hearFrom: signupUser.hearFrom,
+              helpOn: signupUser.helpOn,
+              description: signupUser.description,
+              status: 'NEW'})
+            .subscribe((response) => {
+              console.log(response);
             });
         this.isPostSignup = true;
         this.loading = true;
+        this.submitted = true;
       }, error => {
         console.log(error);
         this.loading = false;
+        this.submitted = false;
       });
     } else {
+      this.submitted = false;
+      this.loading = false;
       alert('form error');
     }
   }
@@ -82,17 +95,13 @@ export class ContactComponent implements OnInit {
     this.router.navigate(['']);
   }
 
-  reasonSelected(reason) {
-    this.signupForm.controls.reason.setValue(reason);
-    this.reasonDropdownButton.nativeElement.classList.remove('is-active');
+  dismiss() {
+    // using the injected ModalController this page
+    // can "dismiss" itself and optionally pass back data
+    this.modalCtrl.dismiss({
+      dismissed: true
+    }).then(r => {});
   }
 
-  reasonDropdownClick(event) {
-
-    this.reasonDropdownButton.nativeElement.classList.toggle('is-active');
-
-    //  this.reasonDropdownButton.nativeElement.classList.remove('is-active');
-
-  }
 
 }

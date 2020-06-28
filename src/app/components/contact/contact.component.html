@@ -1,94 +1,71 @@
 
 <ion-content>
-  <div *ngIf="!isPostSignup">
+  <div *ngIf="!isPostSignup" class="ion-margin">
     <h4>Contact us</h4>
     <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
       <ion-list>
         <ion-item>
-          <ion-label>First Name:</ion-label>
+          <ion-label position="stacked">Name:</ion-label>
           <ion-input type="text" placeholder="" formControlName="fullName"></ion-input>
-          <small class="" >Required</small>
+          <small class="error-input" *ngIf="submitted && f.fullName.errors?.required">Required</small>
         </ion-item>
         <ion-item>
-          <ion-label>Organization:</ion-label>
-          <ion-input type="text" placeholder="" formControlName="organization"></ion-input>
+          <ion-label position="stacked">Company:</ion-label>
+          <ion-input type="text" placeholder="" formControlName="company"></ion-input>
         </ion-item>
         <ion-item>
-          <ion-label>Email*:</ion-label>
-          <ion-input type="text" placeholder="Email input" formControlName="email"></ion-input>
-          <small class="help is-danger" *ngIf="submitted && f.email.errors?.required">Required</small>
-          <small class="help is-danger" *ngIf="submitted && f.email.errors?.pattern">This email is invalid</small>
+          <ion-label position="stacked">Country:</ion-label>
+          <ion-input type="text" placeholder="" formControlName="country"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Email:</ion-label>
+          <ion-input type="text" placeholder="eg: joe@gmail.com" formControlName="email"></ion-input>
+          <small class="error-input" *ngIf="submitted && f.email.errors?.required">Required</small>
+          <small class="error-input" *ngIf="submitted && f.email.errors?.pattern">This email is invalid</small>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Phone Number:</ion-label>
+          <ion-input placeholder="" formControlName="phone"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">How did you hear us?:</ion-label>
+          <ion-select value="social-media" okText="Okay" cancelText="Dismiss" formControlName="hearFrom"
+                      interface="popover" >
+            <ion-select-option value="social-media">Social media</ion-select-option>
+            <ion-select-option value="reference">Reference</ion-select-option>
+            <ion-select-option value="others">Others</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">How can we help you?:</ion-label>
+          <ion-select value="brown" okText="Okay" cancelText="Dismiss" formControlName="helpOn"
+                      interface="popover" >
+            <ion-select-option value="demo">Request for demo</ion-select-option>
+            <ion-select-option value="subscription">Subscription</ion-select-option>
+            <ion-select-option value="support">Support</ion-select-option>
+            <ion-select-option value="general">General questions</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Describe your needs:</ion-label>
+          <ion-textarea placeholder="" formControlName="description"></ion-textarea>
         </ion-item>
       </ion-list>
+      <ion-toolbar>
+        <ion-buttons slot="primary">
+          <ion-button color="dark" role="dismiss" (click)="dismiss()">Cancel</ion-button>
+          <ion-button type="submit" color="primary" [disabled]="loading" >Submit</ion-button>
+        </ion-buttons>
+      </ion-toolbar>
 
 
-      <div class="field">
-        <label class="label">Email*</label>
-        <div class="control">
-          <input class="input" type="email" placeholder="Email input" value="" formControlName="email">
-        </div>
-        <small class="help is-danger" *ngIf="submitted && f.email.errors?.required">Required</small>
-        <small class="help is-danger" *ngIf="submitted && f.email.errors?.pattern">This email is invalid</small>
-      </div>
-
-      <div class="field">
-        <label class="label">Phone</label>
-        <div class="control">
-          <input class="input" placeholder="" value="" formControlName="phone">
-        </div>
-      </div>
-
-      <div class="field">
-        <label class="label">Reason</label>
-        <div class="control">
-
-          <div class="dropdown" #reasonDropdownButton>
-            <div class="dropdown-trigger">
-              <button class="button" type="button" aria-haspopup="true" aria-controls="dropdown-menu"
-                      (click)="reasonDropdownClick($event)">
-                <span>Select Reason</span>
-                <span class="icon is-small">
-        <i class="fas fa-angle-down" aria-hidden="true"></i>
-      </span>
-              </button>
-            </div>
-            <div class="dropdown-menu modal-background" id="dropdown-menu" role="menu">
-              <div class="dropdown-content" (click)="reasonSelected('salesdemo')">
-                <a class="dropdown-item">
-                  Sales (Demo)
-                </a>
-                <a class="dropdown-item" (click)="reasonSelected('support')">
-                  Support
-                </a>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-      <div class="field">
-        <label class="label">Comments</label>
-        <div class="control">
-          <textarea class="textarea" placeholder="" formControlName="comments"></textarea>
-        </div>
-      </div>
-
-      <div class="field is-grouped has-margin-top-30 is-pulled-right">
-        <div class="control">
-          <button class="button is-link is-light">Cancel</button>
-        </div>
-        <div class="control">
-          <button type="submit" class="button is-primary" [disabled]="loading" >Submit</button>
-        </div>
-      </div>
     </form>
   </div>
 
-  <div class="section container is-half-width has-text-centered" *ngIf="isPostSignup">
-    <h3 class="title is-3 is-center">Thank you for contacting us.</h3>
-    <h4 class="title is-3 is-center">Our executive will contact you shortly.</h4>
-    <button class="button is-light" (click)="goToHomePage()">Go back to Home</button>
+  <div class="ion-text-center" *ngIf="isPostSignup">
+    <h3>Thank you for contacting us.</h3>
+    <h4>Our executive will contact you shortly.</h4>
+    <ion-button class="button is-light" (click)="dismiss()">Okay</ion-button>
   </div>
 
 </ion-content>

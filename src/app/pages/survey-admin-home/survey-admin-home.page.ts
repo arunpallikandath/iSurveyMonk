@@ -1,18 +1,19 @@
 import { Component, OnInit } from '@angular/core';
-import {AlertController, MenuController} from '@ionic/angular';
 import {GlobalsService} from '../../shared/services/globals.service';
-import {AuthService} from '../../shared/services/auth.service';
+import {AlertController, MenuController} from '@ionic/angular';
 import {Router} from '@angular/router';
+import {AuthService} from '../../shared/services/auth.service';
+import {FirestoreService} from '../../shared/services/firestore.service';
 
 @Component({
-  selector: 'app-master-admin-home',
-  templateUrl: './master-admin-home.page.html',
-  styleUrls: ['./master-admin-home.page.scss'],
+  selector: 'app-survey-admin-home',
+  templateUrl: './survey-admin-home.page.html',
+  styleUrls: ['./survey-admin-home.page.scss'],
 })
-export class MasterAdminHomePage implements OnInit {
+export class SurveyAdminHomePage implements OnInit {
 
-  constructor(private menuCtrl: MenuController, private globals: GlobalsService,
-              private auth: AuthService, private router: Router, private alertCtrl: AlertController) {
+  constructor(private globals: GlobalsService, private menuCtrl: MenuController, private alertCtrl: AlertController,
+              private router: Router, private auth: AuthService, private fireStore: FirestoreService) {
     this.globals.menuItems = [];
     this.globals.menuItems.push({
       title: 'Home',
@@ -23,16 +24,12 @@ export class MasterAdminHomePage implements OnInit {
   }
 
   ngOnInit() {
-  }
-
-  logout() {
-    this.auth.logout().then((response) => {
-      console.log('logout');
-      this.router.navigate(['login']);
-    }, error => {
-      console.log(error);
+    this.fireStore.getUserInfo().then((result) => {
+        console.log(result);
+        this.fireStore.getAllOrganisationUsers(result.organization)
     });
   }
+
 
   async presentLogoutConfirmation() {
     const alert = await this.alertCtrl.create({
@@ -58,6 +55,15 @@ export class MasterAdminHomePage implements OnInit {
     });
 
     await alert.present();
+  }
+
+  logout() {
+    this.auth.logout().then((response) => {
+      console.log('logout');
+      this.router.navigate(['login']);
+    }, error => {
+      console.log(error);
+    });
   }
 
 }

@@ -1,8 +1,10 @@
 export interface SignupUser {
   fullName: string;
-  organization: string;
+  company: string;
+  country: string;
   email: string;
   phone: string;
-  reason: string;
-  comments: string;
+  hearFrom: string;
+  helpOn: string;
+  description: string;
 }

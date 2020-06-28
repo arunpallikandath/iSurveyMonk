@@ -26,6 +26,15 @@
 @import "~@ionic/angular/css/flex-utils.css";
 
 
+.error-input {
+
+  color: red;
+}
+
+ion-button {
+  text-transform: none;
+}
+
 ion-item {
   ion-label {
     margin-bottom: 5px !important;
@@ -35,6 +44,13 @@ ion-item {
 ion-menu {
   --side-min-width: 170px;
   --side-max-width: 20%;
+  ion-content {
+    main {
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+
+  }
 }
 
 ion-card-content {

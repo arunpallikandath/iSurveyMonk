@@ -8,6 +8,7 @@ import {ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot, UrlTre
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {falseIfMissing} from 'protractor/built/util';
 import {tap} from 'rxjs/operators';
+import {GlobalsService} from './globals.service';
 
 
 @Injectable()
@@ -31,13 +32,15 @@ export class AuthService {
   public loggedIn = new Subject<boolean>();
   public loggedIn$ = this.loggedIn.asObservable();
 
-  constructor(firebaseService: FirebaseService, private router: Router) {
+  constructor(firebaseService: FirebaseService, private router: Router, private globals: GlobalsService) {
     firebaseService.initializeFirebase();
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
-         this.loggedIn.next(true);
+        window.localStorage.setItem('loginId', user.uid);
+        this.loggedIn.next(true);
       } else {
-         this.loggedIn.next(false);
+        window.localStorage.removeItem('loginId');
+        this.loggedIn.next(false);
         this.router.navigate(['/']);
       }
     });
@@ -59,9 +62,12 @@ export class AuthService {
       firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
         .then(() => {
           firebase.auth().signInWithEmailAndPassword(email, password).then((result) => {
+            console.log(result);
+            window.localStorage.setItem('loginId', result.user.uid);
             this.loggedIn.next( true);
             resolve(result);
           }, error => {
+            window.localStorage.removeItem('loginId');
             this.loggedIn.next( false);
             reject();
           });
@@ -70,5 +76,9 @@ export class AuthService {
           reject(error);
         });
     });
+  }
+
+  logout() {
+    return firebase.auth().signOut();
   }
 }
