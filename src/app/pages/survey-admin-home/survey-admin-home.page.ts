@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import {GlobalsService} from '../../shared/services/globals.service';
-import {AlertController, MenuController} from '@ionic/angular';
+import {AlertController, MenuController, ModalController} from '@ionic/angular';
 import {Router} from '@angular/router';
 import {AuthService} from '../../shared/services/auth.service';
 import {FirestoreService} from '../../shared/services/firestore.service';
+import {ContactComponent} from "../../components/contact/contact.component";
+import {SurveyAssignmentComponent} from "../../components/survey-assignment/survey-assignment.component";
 
 @Component({
   selector: 'app-survey-admin-home',
@@ -13,7 +15,8 @@ import {FirestoreService} from '../../shared/services/firestore.service';
 export class SurveyAdminHomePage implements OnInit {
 
   constructor(private globals: GlobalsService, private menuCtrl: MenuController, private alertCtrl: AlertController,
-              private router: Router, private auth: AuthService, private fireStore: FirestoreService) {
+              private router: Router, private auth: AuthService, private fireStore: FirestoreService,
+              private modalCtrl: ModalController) {
     this.globals.menuItems = [];
     this.globals.menuItems.push({
       title: 'Home',
@@ -24,10 +27,7 @@ export class SurveyAdminHomePage implements OnInit {
   }
 
   ngOnInit() {
-    this.fireStore.getUserInfo().then((result) => {
-        console.log(result);
-        this.fireStore.getAllOrganisationUsers(result.organization)
-    });
+
   }
 
 
@@ -65,5 +65,6 @@ export class SurveyAdminHomePage implements OnInit {
       console.log(error);
     });
   }
+
 
 }

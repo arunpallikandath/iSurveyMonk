@@ -58,7 +58,7 @@ export class LoginPage implements OnInit {
         this.smLoginForm.get('smPassword').value).then((result) => {
       if (result && result.user && result.user.uid) {
         console.log(result.user);
-        this.fireStore.getUserInfo(result.user.uid).then((userInfo: any) => {
+        this.fireStore.getUserInfo().then((userInfo: any) => {
           console.log(userInfo.role);
           let homepage = '/';
           switch (userInfo.role) {

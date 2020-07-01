@@ -51,7 +51,6 @@ export class FirestoreService {
                         if (userSnapshot) {
                           const fullName = userSnapshot.get('fullName') || '';
                           const role = userSnapshot.get('role') || '';
-                          const organization = userSnapshot.get('organization') || '';
                           console.log(fullName);
                           resolve({name: fullName, role, organization});
                         } else {
@@ -82,7 +81,7 @@ export class FirestoreService {
     return db.collection('master_enquiries').doc(docId).delete();
   }
 
-  public getAllOrganisationUsers(organizationName) {
+  public getCompanyRef(organizationName) {
     const db = firebase.firestore();
     const organizationRef =  db.collection(organizationName);
     return organizationRef.get()
@@ -91,5 +90,47 @@ export class FirestoreService {
           return querySnapshot.docs[0];
         }
       });
+  }
+
+  public getCompanySubscribedDomains() {
+    const companyRef =  this.globals.getOrganization();
+    return companyRef.get()
+        .then(querySnapshot => {
+          if(!querySnapshot.empty) {
+            return querySnapshot.docs[0].get('domains');
+          }
+        });
+  }
+
+  public getUserSubscribedDomains(userId) {
+    return new Promise((resolve, reject) => {
+      const companyRef =  this.globals.getOrganization();
+      companyRef.get()
+          .then(querySnapshot => {
+            if(!querySnapshot.empty) {
+              querySnapshot.docs[0].ref.collection('users').doc(userId).get().then(snapshot => {
+                console.log(snapshot.get('surveys'));
+                resolve(snapshot.get('surveys'));
+              });
+            }
+          });
+    });
+
+  }
+
+  public saveSurveyAssignments(domains, userId) {
+    const companyRef =  this.globals.getOrganization();
+    return companyRef.get()
+        .then(querySnapshot => {
+          if(!querySnapshot.empty) {
+            const userToUpdateRef = querySnapshot.docs[0].ref.collection('users').doc(userId);
+            userToUpdateRef.set({surveys: domains}, {merge: true}).then((result) => {
+              console.log('Document successfully written!');
+            }).catch(error => {
+              console.error('Error writing document: ', error);
+            });
+
+          }
+        });
   }
 }

@@ -1,3 +1,31 @@
-<p>
-  user-list works!
-</p>
+<div class="ion-margin">
+  <h4>User Management</h4>
+  <h6 *ngIf="hasError == true">
+    {{errorText}}
+  </h6>
+
+  <ion-grid  *ngIf="hasError == false">
+    <ion-row *ngIf="allUsers.length > 0">
+      <ion-col size="12" *ngFor="let enquiry of allUsers">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>
+              <div class="ion-float-left"> {{enquiry?.fullName}}</div>
+              <div class="ion-float-right"> {{globals.roles[enquiry?.role]}}</div>
+              <div style="clear: both;"></div>
+            </ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+<!--            <div class="card-info-text">{{enquiry?.email}}</div>-->
+<!--            <div class="card-info-label">Email</div>-->
+          </ion-card-content>
+          <ion-toolbar>
+            <ion-buttons slot="end">
+              <ion-button fill="solid" color="primary" (click)="setupSurvey_click(enquiry.docId)">Setup Survey</ion-button>
+            </ion-buttons>
+          </ion-toolbar>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</div>
