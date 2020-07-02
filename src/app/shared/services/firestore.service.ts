@@ -105,12 +105,16 @@ export class FirestoreService {
   public getUserSubscribedDomains(userId) {
     return new Promise((resolve, reject) => {
       const companyRef =  this.globals.getOrganization();
+
       companyRef.get()
           .then(querySnapshot => {
             if(!querySnapshot.empty) {
-              querySnapshot.docs[0].ref.collection('users').doc(userId).get().then(snapshot => {
-                console.log(snapshot.get('surveys'));
-                resolve(snapshot.get('surveys'));
+              const userRef =  querySnapshot.docs[0].ref.collection('users').doc(userId);
+              querySnapshot.docs[0].ref.collection('survey_assignments').get().then(surveyAssignments => {
+                if (!surveyAssignments.empty) {
+                  console.log(surveyAssignments);
+                  resolve(surveyAssignments.doc().where('user', '==',userRef ).get('domain'));
+                }
               });
             }
           });

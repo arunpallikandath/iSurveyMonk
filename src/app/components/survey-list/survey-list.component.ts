@@ -2,6 +2,9 @@ import {Component, Input, OnInit} from '@angular/core';
 import {FirestoreService} from '../../shared/services/firestore.service';
 import * as _ from "lodash";
 import {GlobalsService} from "../../shared/services/globals.service";
+import {SurveyAssignmentComponent} from "../survey-assignment/survey-assignment.component";
+import {ModalController} from "@ionic/angular";
+import {SurveyTestComponent} from "../survey-test/survey-test.component";
 
 interface ISubscribedDomain {
   name: string;
@@ -9,6 +12,7 @@ interface ISubscribedDomain {
   endDate: string;
   selected:boolean;
   status: string;
+  id: string;
 }
 
 @Component({
@@ -17,9 +21,10 @@ interface ISubscribedDomain {
   styleUrls: ['./survey-list.component.scss'],
 })
 export class SurveyListComponent implements OnInit {
+  @Input() surveyId: string;
   userId: string = window.localStorage.getItem('loginId');
   subscribedDomains: ISubscribedDomain[] = [];
-  constructor(private fireStore: FirestoreService, public globals: GlobalsService) { }
+  constructor(private fireStore: FirestoreService, public globals: GlobalsService, private modalCtrl: ModalController) { }
 
   ngOnInit() {
     this.fireStore.getUserInfo().then((result: any) => {
@@ -31,6 +36,18 @@ export class SurveyListComponent implements OnInit {
         });
       });
     });
+  }
+
+  async launchSurvey_click(userId) {
+    const modal = await this.modalCtrl.create({
+      component: SurveyTestComponent,
+      cssClass: 'modal-survey-test',
+      backdropDismiss: false,
+      componentProps: {
+        'userId': userId,
+      }
+    });
+    return await modal.present();
   }
 
 }

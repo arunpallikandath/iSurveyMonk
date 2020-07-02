@@ -6,7 +6,7 @@
 
 <ion-content>
   <ion-grid>
-    <ion-row class="header-row ion-justify-content-start"  >
+    <ion-row class="header-row"  >
       <ion-col >
         Status
       </ion-col>
@@ -19,8 +19,11 @@
       <ion-col>
         End Date
       </ion-col>
+      <ion-col class="ion-justify-content-center" style="display: flex;">
+       Launch
+      </ion-col>
     </ion-row>
-    <ion-row *ngFor="let domain of subscribedDomains" class="ion-align-items-center ion-justify-content-start">
+    <ion-row *ngFor="let domain of subscribedDomains" class="ion-align-items-center">
       <ion-col>
         <ion-label>{{globals.surveyStatus[domain.status]}}</ion-label>
       </ion-col>
@@ -32,6 +35,9 @@
       </ion-col>
       <ion-col class="ion-justify-content-start">
         <ion-label>{{domain.endDate}}</ion-label>
+      </ion-col>
+      <ion-col class="ion-justify-content-center" style="display: flex;">
+        <ion-button color="primary" (click)="launchSurvey_click(domain.id)">Launch Survey</ion-button>
       </ion-col>
     </ion-row>
   </ion-grid>

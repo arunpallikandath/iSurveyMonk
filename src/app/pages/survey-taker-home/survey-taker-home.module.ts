@@ -8,6 +8,7 @@ import { SurveyTakerHomePageRoutingModule } from './survey-taker-home-routing.mo
 
 import { SurveyTakerHomePage } from './survey-taker-home.page';
 import {SurveyListComponent} from "../../components/survey-list/survey-list.component";
+import {SurveyTestComponent} from "../../components/survey-test/survey-test.component";
 
 @NgModule({
   imports: [
@@ -16,6 +17,6 @@ import {SurveyListComponent} from "../../components/survey-list/survey-list.comp
     IonicModule,
     SurveyTakerHomePageRoutingModule
   ],
-  declarations: [SurveyTakerHomePage, SurveyListComponent]
+  declarations: [SurveyTakerHomePage, SurveyListComponent, SurveyTestComponent]
 })
 export class SurveyTakerHomePageModule {}
