@@ -6,6 +6,7 @@ import {SignupUser} from '../models/signupuser.model';
 import {FirebaseService} from './firebase.service';
 import {user} from 'firebase-functions/lib/providers/auth';
 import {GlobalsService} from './globals.service';
+import * as moment from "moment";
 
 @Injectable({
   providedIn: 'root'
@@ -93,48 +94,158 @@ export class FirestoreService {
   }
 
   public getCompanySubscribedDomains() {
-    const companyRef =  this.globals.getOrganization();
-    return companyRef.get()
-        .then(querySnapshot => {
-          if(!querySnapshot.empty) {
-            return querySnapshot.docs[0].get('domains');
-          }
-        });
+      return new Promise((resolve, reject) => {
+          const companyRef =  this.globals.getOrganization();
+          companyRef.get()
+              .then(querySnapshot => {
+                  if(!querySnapshot.empty) {
+                      resolve(querySnapshot.docs[0].ref.collection('domains'));
+                  }
+              });
+
+      });
   }
 
   public getUserSubscribedDomains(userId) {
     return new Promise((resolve, reject) => {
       const companyRef =  this.globals.getOrganization();
-
+      const userAssignments = []
       companyRef.get()
           .then(querySnapshot => {
             if(!querySnapshot.empty) {
               const userRef =  querySnapshot.docs[0].ref.collection('users').doc(userId);
-              querySnapshot.docs[0].ref.collection('survey_assignments').get().then(surveyAssignments => {
-                if (!surveyAssignments.empty) {
+              querySnapshot.docs[0].ref.collection('survey_assignments').where('user', '==', userRef).get().then(surveyAssignments => {
                   console.log(surveyAssignments);
-                  resolve(surveyAssignments.doc().where('user', '==',userRef ).get('domain'));
+                if (!surveyAssignments.empty) {
+                  surveyAssignments.forEach(async (assignDocu) => {
+                    let assignment = assignDocu.data();
+                      console.log('dfdfdf');
+                    if(assignment.domain) {
+                        userAssignments.push({...assignment, id: assignDocu.id});
+                    }
+                  });
+                  resolve(userAssignments);
                 }
               });
             }
           });
     });
-
   }
 
-  public saveSurveyAssignments(domains, userId) {
+  public saveSurveyAssignments(assignments, userId) {
     const companyRef =  this.globals.getOrganization();
-    return companyRef.get()
-        .then(querySnapshot => {
-          if(!querySnapshot.empty) {
-            const userToUpdateRef = querySnapshot.docs[0].ref.collection('users').doc(userId);
-            userToUpdateRef.set({surveys: domains}, {merge: true}).then((result) => {
-              console.log('Document successfully written!');
-            }).catch(error => {
-              console.error('Error writing document: ', error);
-            });
+    const db = firebase.firestore();
+    return new Promise((resolve, reject) => {
+      companyRef.get()
+          .then(querySnapshot => {
+            if(!querySnapshot.empty) {
+                console.log(querySnapshot.docs[0].id);
+              const surveyAssignmentsRef = querySnapshot.docs[0].ref.collection('survey_assignments')
+              assignments.forEach((assignment) => {
+                console.log(querySnapshot.docs[0].get('companyCode'));
+                assignment.user = db.doc(querySnapshot.docs[0].get('companyCode') + '/' + querySnapshot.docs[0].id + '/users/' + userId)
+                  console.log(assignment);
+                if(assignment.id) {
+                    surveyAssignmentsRef.doc(assignment.id).set(assignment, {merge: true}).then((result) => {
+                        console.log('Document successfully written!');
+                    }).catch(error => {
+                        console.error('Error writing document: ', error);
+                    });
+                } else {
+                    surveyAssignmentsRef.add(assignment).then((result) => {
+                        console.log('Document added!');
+                    }).catch(error => {
+                        console.error('Error adding document: ', error);
+                    });
+                }
 
-          }
+              });
+            }
+          });
+    });
+  }
+
+  public saveSurveyAssignmentTestDetails(assignmentId, questionAnswers) {
+    const companyRef =  this.globals.getOrganization();
+      const testDetails = {testDetails: {
+              lastSavedOn: moment().format('MM/DD/YYYYTHH:mm:ss'), status: 'SAVE', questionAnswers: questionAnswers}}
+      console.log(testDetails)
+    return new Promise((resolve, reject) => {
+      companyRef.get()
+          .then(querySnapshot => {
+            if(!querySnapshot.empty) {
+              const assignmentDoc =  querySnapshot.docs[0].ref.collection('survey_assignments').doc(assignmentId);
+              assignmentDoc.set(testDetails, {merge: true}).then((result) => {
+                console.log('Document successfully written!');
+              }).catch(error => {
+                console.error('Error writing document: ', error);
+              });
+            }
+          });
+    });
+  }
+
+    public submitSurveyAssignmentTestDetails(assignmentId, questionAnswers) {
+        const companyRef =  this.globals.getOrganization();
+        const testDetails = {testDetails: {
+                lastSavedOn: moment().format('MM/DD/YYYYTHH:mm:ss'), status: 'SUBMIT', questionAnswers: questionAnswers}}
+        console.log(testDetails)
+        return new Promise((resolve, reject) => {
+            companyRef.get()
+                .then(querySnapshot => {
+                    if(!querySnapshot.empty) {
+                        const assignmentDoc =  querySnapshot.docs[0].ref.collection('survey_assignments').doc(assignmentId);
+                        assignmentDoc.set(testDetails, {merge: true}).then((result) => {
+                            console.log('Document successfully written!');
+                        }).catch(error => {
+                            console.error('Error writing document: ', error);
+                        });
+                    }
+                });
         });
+    }
+
+  public getQuestionsAndOptionsForAssignment(assignmentId) {
+    return new Promise((resolve, reject) => {
+      const companyRef =  this.globals.getOrganization();
+      companyRef.get()
+          .then(querySnapshot => {
+            if (!querySnapshot.empty) {
+              const assignmentDoc =  querySnapshot.docs[0].ref.collection('survey_assignments').doc(assignmentId)
+              if(assignmentDoc) {
+                assignmentDoc.get().then(assignment => {
+                  assignment.data().domain.get().then(domain => {
+                    const db = firebase.firestore();
+                    const domainRef = db.collection('master_domains')
+                    domainRef.doc(domain.id).get().then((domainSnapshot) => {
+                      //Fetch questions
+                     const promise1 =  domainSnapshot.ref.collection('questions').get();
+
+                      // Fetch options
+                      const promise2 = domainSnapshot.get('optionsRef').get();
+                      //
+                      Promise.all([promise1, promise2]).then((values) => {
+                          const surveyQuestions = [];
+                          values[0].forEach(question => {
+                            surveyQuestions.push(question.data());
+                          });
+
+                          const optionsArray = []
+                          values[1].ref.collection('options').get().then((options) => {
+                            options.forEach((option) => {
+                              optionsArray.push(option.data())
+                            });
+                            resolve({questions: surveyQuestions, options: optionsArray});
+                          });
+                        console.log(values);
+                      });
+                      //
+                    });
+                  });
+                })
+              }
+            }
+          });
+    });
   }
 }

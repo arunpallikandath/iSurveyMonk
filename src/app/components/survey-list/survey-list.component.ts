@@ -28,23 +28,21 @@ export class SurveyListComponent implements OnInit {
 
   ngOnInit() {
     this.fireStore.getUserInfo().then((result: any) => {
-      this.fireStore.getUserSubscribedDomains(this.userId).then((subscribedDomains: any) => {
-        subscribedDomains.forEach((domain) => {
-          console.log(domain);
-          _.merge(this.subscribedDomains, [domain]);
-          console.log(this.subscribedDomains);
-        });
+      this.fireStore.getUserSubscribedDomains(this.userId).then((domains: any) => {
+        _.merge(this.subscribedDomains, domains);
+        console.log(this.subscribedDomains);
+        console.log(domains);
       });
     });
   }
 
-  async launchSurvey_click(userId) {
+  async launchSurvey_click(assignmentId) {
     const modal = await this.modalCtrl.create({
       component: SurveyTestComponent,
       cssClass: 'modal-survey-test',
       backdropDismiss: false,
       componentProps: {
-        'userId': userId,
+        'assignmentId': assignmentId,
       }
     });
     return await modal.present();

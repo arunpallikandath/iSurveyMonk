@@ -7,7 +7,7 @@ export class GlobalsService {
 
   menuItems = [];
   roles = {masteradmin: 'Master Admin', surveyadmin: 'Survey Admin', surveytaker: 'Survey Taker', 'surveymanager': 'Survey Manager'};
-  surveyStatus =  {NOTSTARTED: 'Not Started'};
+  surveyStatus =  {notstarted: 'Not Started'};
   private loggedInUser: string = '';
   private baseOrganization: string;
   private baseOrganizationRef: any;

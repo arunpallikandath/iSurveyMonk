@@ -3,6 +3,7 @@ import {FirestoreService} from "../../shared/services/firestore.service";
 import {ModalController} from "@ionic/angular";
 import * as _ from 'lodash';
 import * as moment from 'moment';
+import {assembleI18nBoundString} from "@angular/compiler/src/render3/view/i18n/util";
 
 interface ISubscribedDomain {
   name: string;
@@ -10,6 +11,8 @@ interface ISubscribedDomain {
   endDate: string;
   selected:boolean;
   status: string;
+  id: string;
+  domain: any;
 }
 
 @Component({
@@ -23,24 +26,27 @@ export class SurveyAssignmentComponent implements OnInit {
   constructor(private fireStore: FirestoreService, private modalCtrl: ModalController) { }
 
   ngOnInit() {
-    this.fireStore.getCompanySubscribedDomains().then(result => {
-      result.forEach((domain) => {
-        domain.get().then(res => {
-          console.log(res.data());
-          this.subscribedDomains.push({selected: false, startDate: '', endDate: '', id: res.id, ...res.data()})
+    this.fireStore.getCompanySubscribedDomains().then((result: any) => {
+      result.get().then((domains) => {
+        console.log(domains);
+        domains.docs.forEach((domain) => {
+          this.subscribedDomains.push({selected: false, startDate: '', endDate: '', domain: domain.ref, ...domain.data()})
         });
-      });
-      this.fireStore.getUserSubscribedDomains(this.userId).then((subscribedDomains: any) => {
-        subscribedDomains.forEach((domain) => {
-          console.log(domain);
-          _.merge(this.subscribedDomains, [domain]);
-         console.log(this.subscribedDomains);
+        this.fireStore.getUserSubscribedDomains(this.userId).then((assignments: any) => {
+          console.log(assignments);
+          assignments.forEach(assignment => {
+            assignment.domain.get().then((xdomains) => {
+              this.subscribedDomains.forEach((eachDomain) => {
+                if(eachDomain.domain.id === assignment.domain.id) {
+                  _.merge(eachDomain, assignment)
+                }
+              })
+            });
+          });
         });
+      })
       });
 
-    })
-    console.log(this.userId);
-    console.log(this.subscribedDomains);
 
   }
 
@@ -54,11 +60,12 @@ export class SurveyAssignmentComponent implements OnInit {
     const selectedDomains = this.subscribedDomains.filter(item => item.selected === true);
     selectedDomains.forEach((domain) => {
       domain.endDate = moment(domain.endDate).format('MM/DD/YYYY');
-      domain.startDate =  moment(domain.startDate).format('MM/DD/YYYY')
-      domain.status = 'NOTSTARTED'
+      domain.startDate =  moment(domain.startDate).format('MM/DD/YYYY');
+      domain.status = 'notstarted';
     });
-    this.fireStore.saveSurveyAssignments(selectedDomains, this.userId);
-    this.dismiss();
+    console.log(selectedDomains);
+   this.fireStore.saveSurveyAssignments(selectedDomains, this.userId);
+   this.dismiss();
 
   }
 

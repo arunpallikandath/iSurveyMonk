@@ -1,17 +1,37 @@
 <ion-header>
   <ion-toolbar color="light">
     <ion-title>Take Survey</ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="solid" color="warning" (click)="submitSurveyAssignment()">Submit</ion-button>
+    </ion-buttons>
+
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-
+    <ion-list>
+      <ion-item *ngFor="let question of surveyQuestions.questions; index as i">
+        <ion-card style="width: 100%">
+          <ion-card-header>
+            {{i + 1}}). {{question.description}}
+          </ion-card-header>
+          <ion-card-content>
+              <ion-radio-group [(ngModel)]="question.answer">
+                <ion-item  *ngFor="let option of surveyQuestions.options; index as j">
+                  <ion-label>{{option.name}}</ion-label>
+                  <ion-radio value="{{option.code}}"></ion-radio>
+                </ion-item>
+              </ion-radio-group>
+          </ion-card-content>
+        </ion-card>
+      </ion-item>
+    </ion-list>
 </ion-content>
 <ion-footer>
   <ion-toolbar>
     <ion-buttons slot="end">
       <ion-button (click)="dismiss()">Cancel</ion-button>
-      <ion-button fill="solid" color="primary" (click)="saveToDocument()">&nbsp;&nbsp;Save&nbsp;&nbsp;</ion-button>
+      <ion-button fill="solid" color="primary" (click)="saveSurveyAssignment()">&nbsp;&nbsp;Save&nbsp;&nbsp;</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-footer>

@@ -18,7 +18,11 @@ export class MasterAdminHomePage implements OnInit {
       title: 'Home',
       url: 'master-admin-home',
       icon: 'home'
-    })
+    }, {
+      title: 'Company Management',
+      url: 'master-admin/company_management',
+      icon: 'infinite'
+    });
     menuCtrl.enable(true);
   }
 
