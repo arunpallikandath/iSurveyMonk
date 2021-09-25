@@ -17,9 +17,9 @@
           </ion-card-header>
           <ion-card-content>
               <ion-radio-group [(ngModel)]="question.answer">
-                <ion-item  *ngFor="let option of surveyQuestions.options; index as j">
-                  <ion-label>{{option.name}}</ion-label>
-                  <ion-radio value="{{option.code}}"></ion-radio>
+                <ion-item  *ngFor="let option of question.options | keyvalue; index as j">
+                  <ion-label>{{option.value}}</ion-label>
+                  <ion-radio value="{{option.key}}"></ion-radio>
                 </ion-item>
               </ion-radio-group>
           </ion-card-content>

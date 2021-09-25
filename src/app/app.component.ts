@@ -50,7 +50,7 @@ export class AppComponent implements OnInit {
     private platform: Platform,
     private splashScreen: SplashScreen,
     private statusBar: StatusBar,
-    private globals: GlobalsService
+    public globals: GlobalsService
   ) {
     this.initializeApp();
   }
